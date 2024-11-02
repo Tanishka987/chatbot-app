@@ -1,19 +1,18 @@
-from flask import Flask, render_template, request, jsonify, json
+from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 import os
 import torch
 import torchvision
 from torchvision import transforms
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import Dataset
 import numpy as np
 import cv2
 import face_recognition
-from torch.autograd import Variable
 from torch import nn
 from torchvision import models
-from skimage import img_as_ubyte
 import warnings
 warnings.filterwarnings("ignore")
+from flask_cors import CORS
 
 UPLOAD_FOLDER = 'Uploaded_Files'
 video_path = ""
@@ -22,7 +21,8 @@ detectOutput = []
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-app = Flask("__main__", template_folder="templates")
+app = Flask(__name__)
+CORS(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 class Model(nn.Module):
@@ -31,7 +31,6 @@ class Model(nn.Module):
         model = models.resnext50_32x4d(pretrained=True)
         self.model = nn.Sequential(*list(model.children())[:-2])
         self.lstm = nn.LSTM(latent_dim, hidden_dim, lstm_layers, bidirectional)
-        self.relu = nn.LeakyReLU()
         self.dp = nn.Dropout(0.4)
         self.linear1 = nn.Linear(2048, num_classes)
         self.avgpool = nn.AdaptiveAvgPool2d(1)
@@ -48,27 +47,13 @@ class Model(nn.Module):
 im_size = 112
 mean = [0.485, 0.456, 0.406]
 std = [0.229, 0.224, 0.225]
-sm = nn.Softmax()
-inv_normalize = transforms.Normalize(mean=-1 * np.divide(mean, std), std=np.divide([1, 1, 1], std))
+sm = nn.Softmax(dim=1)
 
-def im_convert(tensor):
-    image = tensor.to("cpu").clone().detach()
-    image = image.squeeze()
-    image = inv_normalize(image)
-    image = image.numpy()
-    image = image.transpose(1, 2, 0)
-    image = image.clip(0, 1)
-    cv2.imwrite('./2.png', image * 255)
-    return image
-
-def predict(model, img, path='./'):
-    fmap, logits = model(img.to())
-    params = list(model.parameters())
-    weight_softmax = model.linear1.weight.detach().cpu().numpy()
+def predict(model, img):
+    fmap, logits = model(img)
     logits = sm(logits)
     _, prediction = torch.max(logits, 1)
     confidence = logits[:, int(prediction.item())].item() * 100
-    print('confidence of prediction:', confidence)
     return [int(prediction.item()), confidence]
 
 class validation_dataset(Dataset):
@@ -108,10 +93,6 @@ class validation_dataset(Dataset):
                 yield image
 
 def detectFakeVideo(videoPath):
-    im_size = 112
-    mean = [0.485, 0.456, 0.406]
-    std = [0.229, 0.224, 0.225]
-
     train_transforms = transforms.Compose([
         transforms.ToPILImage(),
         transforms.Resize((im_size, im_size)),
@@ -121,49 +102,23 @@ def detectFakeVideo(videoPath):
     path_to_videos = [videoPath]
     video_dataset = validation_dataset(path_to_videos, sequence_length=20, transform=train_transforms)
     model = Model(2)
-    path_to_model = 'model/df_model.pt'
+    path_to_model = 'models/model_v1.pt'
     model.load_state_dict(torch.load(path_to_model, map_location=torch.device('cpu')))
     model.eval()
-    for i in range(len(path_to_videos)):
-        print(path_to_videos[i])
-        prediction = predict(model, video_dataset[i], './')
-        if prediction[0] == 1:
-            print("REAL")
-        else:
-            print("FAKE")
+    prediction = predict(model, video_dataset[0])
     return prediction
 
-@app.route('/', methods=['POST', 'GET'])
-def homepage():
-    if request.method == 'GET':
-        return render_template('index.html')
-    return render_template('index.html')
-
-@app.route('/Detect', methods=['POST', 'GET'])
+@app.route('/Detect', methods=['POST'])
 def DetectPage():
-    if request.method == 'GET':
-        return render_template('index.html')
-    if request.method == 'POST':
-        video = request.files['video']
-        print(video.filename)
-        video_filename = secure_filename(video.filename)
-
-        # Ensure the directory exists
-        if not os.path.exists(app.config['UPLOAD_FOLDER']):
-            os.makedirs(app.config['UPLOAD_FOLDER'])
-
-        video.save(os.path.join(app.config['UPLOAD_FOLDER'], video_filename))
-        video_path = os.path.join(app.config['UPLOAD_FOLDER'], video_filename)
-        prediction = detectFakeVideo(video_path)
-        print(prediction)
-        output = "REAL" if prediction[0] == 1 else "FAKE"
-        confidence = prediction[1]
-        data = {'output': output, 'confidence': confidence}
-        data = json.dumps(data)
-
-        # Remove the video after processing
-        os.remove(video_path)
-        return render_template('index.html', data=data)
+    video = request.files['video']
+    video_filename = secure_filename(video.filename)
+    video.save(os.path.join(app.config['UPLOAD_FOLDER'], video_filename))
+    video_path = os.path.join(app.config['UPLOAD_FOLDER'], video_filename)
+    prediction = detectFakeVideo(video_path)
+    output = "REAL" if prediction[0] == 1 else "FAKE"
+    confidence = prediction[1]
+    os.remove(video_path)  # Remove the video after processing
+    return jsonify({'output': output, 'confidence': confidence})
 
 if __name__ == "__main__":
     app.run(port=3000)

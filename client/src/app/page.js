@@ -1,101 +1,154 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import {
+  ErrorOutline as AlertCircleIcon,
+  CheckCircle as CheckCircleIcon,
+  Loop as LoaderIcon
+} from '@mui/icons-material';
+import Navbar from '@/components/navbar/Navbar';
+
+// Simple Alert component to replace shadcn/ui Alert
+const Alert = ({ children, variant = 'default', className = '' }) => {
+  const bgColor = variant === 'destructive' ? 'bg-red-50' : 'bg-blue-50';
+  const textColor = variant === 'destructive' ? 'text-red-700' : 'text-blue-700';
+  const borderColor = variant === 'destructive' ? 'border-red-200' : 'border-blue-200';
+
+  return (
+    <div className={`p-4 rounded-md border ${bgColor} ${textColor} ${borderColor} ${className}`}>
+      <div className="flex items-center">
+        <AlertCircleIcon className="h-5 w-5 mr-2" />
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const ResultDisplay = ({ result, confidence }) => {
+  const isFake = result?.toLowerCase().includes('fake');
+  
+  return (
+    <div className="mt-8 p-6 bg-white shadow-lg rounded-lg text-center">
+      <div className="flex items-center justify-center mb-4">
+        {isFake ? (
+          <AlertCircleIcon className="h-12 w-12 text-red-500" />
+        ) : (
+          <CheckCircleIcon className="h-12 w-12 text-green-500" />
+        )}
+      </div>
+      <h2 className={`text-2xl font-bold mb-2 ${isFake ? 'text-red-600' : 'text-green-600'}`}>
+        {result}
+      </h2>
+      <div className="mt-4 bg-gray-100 rounded-full h-4 overflow-hidden">
+        <div
+          className={`h-full ${isFake ? 'bg-red-500' : 'bg-green-500'}`}
+          style={{ width: `${confidence}%` }}
+        />
+      </div>
+      <p className="text-gray-600 mt-2">
+        Confidence: {confidence.toFixed(2)}%
+      </p>
+    </div>
+  );
+};
+
+const UploadForm = ({ onSubmit }) => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const file = event.target.video.files[0];
+    if (file) {
+      onSubmit(file);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="p-6 bg-white rounded-lg shadow-lg">
+      <div className="space-y-4">
+        <label className="block">
+          <span className="text-gray-700">Upload Video</span>
+          <input
+            type="file"
+            name="video"
+            accept="video/*"
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
+              focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+          />
+        </label>
+        <button
+          type="submit"
+          className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          Analyze Video
+        </button>
+      </div>
+    </form>
+  );
+};
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleUpload = async (videoFile) => {
+    setLoading(true);
+    setError(null);
+    const formData = new FormData();
+    formData.append('video', videoFile);
+
+    try {
+      const response = await fetch('http://127.0.0.1:3000/Detect', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to process video');
+      }
+
+      const data = await response.json();
+      setResult(data);
+    } catch (error) {
+      setError('Error processing video. Please try again.');
+      console.error('Error uploading video:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      
+      <div className="container mx-auto px-4 py-12">
+        <h1 className="text-center text-4xl font-bold text-gray-900 mb-4">
+          Detect Fake Videos with AI
+        </h1>
+        <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+          Upload your video to analyze it for potential manipulation using our advanced AI detection system.
+        </p>
+        
+        <div className="max-w-xl mx-auto">
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              {error}
+            </Alert>
+          )}
+          
+          {loading ? (
+            <div className="text-center p-8 bg-white rounded-lg shadow-lg">
+              <LoaderIcon className="h-12 w-12 animate-spin mx-auto text-blue-600 mb-4" />
+              <p className="text-gray-600">Processing your video...</p>
+            </div>
+          ) : (
+            <UploadForm onSubmit={handleUpload} />
+          )}
+          
+          {result && !loading && (
+            <ResultDisplay result={result.output} confidence={result.confidence} />
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
