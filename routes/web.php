@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\VideoController;
 /*
+
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
@@ -16,6 +18,5 @@ use App\Http\Controllers\ChatbotController;
 Route::get('/', function () {
     return view('app'); 
 });
-
-
-Route::post('/app/chat', [ChatbotController::class, 'handleChat']);
+Route::get('/index', [VideoController::class, 'index']);
+Route::post('/upload', [VideoController::class, 'upload'])->name('video.upload');
