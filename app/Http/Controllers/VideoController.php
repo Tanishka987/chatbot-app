@@ -19,15 +19,11 @@ class VideoController extends Controller
 
     $videoFile = $request->file('video');
 
-    // Prepare the file for the request
-    $formData = [
-        'video' => fopen($videoFile->getPathname(), 'r'),
-        'filename' => $videoFile->getClientOriginalName(),
-    ];
-
     try {
         // Send the video file to the external API
-        $response = Http::post('http://127.0.0.1:3000/Detect', $formData);
+        $response = Http::attach(
+            'video', file_get_contents($videoFile->getPathname()), $videoFile->getClientOriginalName()
+        )->post('http://139.84.173.30:5000/Detect');
 
         if ($response->failed()) {
             throw new \Exception('Failed to process video');
@@ -41,4 +37,6 @@ class VideoController extends Controller
         return response()->json(['error' => 'Error processing video: ' . $e->getMessage()], 500);
     }
 }
+
+
 }
