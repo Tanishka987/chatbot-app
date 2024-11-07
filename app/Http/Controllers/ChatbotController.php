@@ -32,13 +32,12 @@ class ChatbotController extends Controller
         $client = new Client();
 
         try {
-            
             $requestData = [
-                'model' => 'zephyr-7b-beta-Q5_K_M', 
+                'model' => 'zephyr-7b-beta-Q5_K_M', // Model name as a string
                 'messages' => [
                     [
-                        'role' => 'user', 
-                        'content' => $message, 
+                        'role' => 'user', // Role as a string
+                        'content' => $message, // User's message as a string
                     ],
                 ],
                 'max_tokens' => 512,
@@ -46,10 +45,8 @@ class ChatbotController extends Controller
                 'temperature' => 0.8,
                 'top_k' => 40,
                 'top_p' => 0.9,
-                'stream' => true,
+                'stream' => false, // Set to true if you want streaming responses
             ];
-
-            
             $response = $client->post($this->vultrApiUrl . 'chat/completions', [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->vultrApiKey,
@@ -60,9 +57,10 @@ class ChatbotController extends Controller
 
             $data = json_decode($response->getBody(), true);
 
-            return $data['response'] ?? 'Sorry, I did not understand that.';
+            // Adjust this based on the actual response structure
+            return $data['choices'][0]['message']['content'] ?? 'Sorry, I did not understand that.';
         } catch (RequestException $e) {
-        
+            // Log the error or handle it as needed
             return 'Error: ' . $e->getMessage();
         }
     }
