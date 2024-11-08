@@ -15,7 +15,7 @@
                 <a href="#" class="navbar-link">Home</a>
                 <a href="#" class="navbar-link">About</a>
                 <a href="#" class="navbar-link">Contact</a>
-                <a href="{{ url('/app') }}" class="submit-button"><i class="fas fa-comments"></i></a>
+                <a href="{{ url('/app') }}" class="submitbutton"><i class="fas fa-comments"></i></a>
             </div>
         </div>
     </div>
@@ -62,7 +62,15 @@
     .navbar-link:hover {
         color: #4a5568;
     }
-    .submit-button{
-        margin-left: 10px;
+    .submitbutton{
+        margin-left:10px;
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #4299e1;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
     }
 </style>
