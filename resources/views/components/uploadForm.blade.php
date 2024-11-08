@@ -8,20 +8,20 @@
 
 <form 
     id="uploadForm"
-    class="bg-white shadow-lg rounded-lg p-8 {{ $dragActive ? 'border-2 border-blue-500' : '' }}"
+    class="form-container"
     ondragenter="event.preventDefault(); setDragActive(true);"
     ondragleave="event.preventDefault(); setDragActive(false);"
     ondragover="event.preventDefault(); setDragActive(true);"
     ondrop="handleDrop(event);"
     onsubmit="handleSubmit(event);"
 >
-    <div class="mb-6">
-        <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <label class="block text-gray-700 text-lg font-medium mb-2" id="file-name-label">
+    <div class="file-upload-container">
+        <div class="file-upload-box">
+            <svg class="file-upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <label class="file-name-label" id="file-name-label">
                 {{ $videoFile ? $videoFile->getClientOriginalName() : 'Drop your video here or click to upload' }}
             </label>
-            <p class="text-sm text-gray-500 mb-4">
+            <p class="file-instruction">
                 Supports MP4, MOV, AVI formats
             </p>
             <input
@@ -33,7 +33,7 @@
             />
             <label
                 for="video-upload"
-                class="inline-block bg-blue-50 text-blue-600 px-4 py-2 rounded-md cursor-pointer hover:bg-blue-100 transition-colors"
+                class="select-video-button"
             >
                 Select Video
             </label>
@@ -43,8 +43,7 @@
         type="submit"
         id="submit-button"
         disabled="{{ !$videoFile ? 'disabled' : '' }}"
-        class="w-full py-3 px-4 rounded-md font-medium text-white transition-colors
-            {{ $videoFile ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed' }}"
+        class="submit-button"
     >
         Detect Fake Video
     </button>
@@ -56,7 +55,7 @@
 
     function setDragActive(active) {
         dragActive = active;
-        document.getElementById('uploadForm').classList.toggle('border-2 border-blue-500', dragActive);
+        document.getElementById('uploadForm').classList.toggle('drag-active', dragActive);
     }
 
     function handleDrop(e) {
@@ -83,11 +82,8 @@
     function handleSubmit(e) {
         e.preventDefault();
         if (videoFile) {
-            // You can implement your form submission logic here, e.g., using AJAX or a form submission
-            // For example, you can use FormData to send the video file to the server
             const formData = new FormData();
             formData.append('video', videoFile);
-            // Replace 'your-upload-url' with the actual URL to handle the upload
             fetch('your-upload-url', {
                 method: 'POST',
                 body: formData
@@ -99,3 +95,83 @@
         }
     }
 </script>
+
+<style>
+    .form-container {
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 2rem;
+    }
+
+    .file-upload-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .file-upload-box {
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.3s;
+    }
+
+    .file-upload-box.drag-active {
+        border-color: #3b82f6;
+    }
+
+    .file-upload-icon {
+        margin-bottom: 1rem;
+        height: 48px;
+        width: 48px;
+        color: #6b7280;
+    }
+
+    .file-name-label {
+        display: block;
+        font-size: 1.25rem;
+        color: #4b5563;
+        margin-bottom: 0.5rem;
+    }
+
+    .file-instruction {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 1.25rem;
+    }
+
+    .select-video-button {
+        display: inline-block;
+        background-color: #eff6ff;
+        color: #3b82f6;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .select-video-button:hover {
+        background-color: #dbeafe;
+    }
+
+    .submit-button {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 500;
+        color: white;
+        background-color: #2563eb;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .submit-button:disabled {
+        background-color: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .submit-button:not(:disabled):hover {
+        background-color: #1d4ed8;
+    }
+</style>
