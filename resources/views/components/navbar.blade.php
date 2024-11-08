@@ -1,16 +1,58 @@
 {{-- resources/views/components/navbar.blade.php --}}
-<nav class="bg-white shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex items-center">
-                <span class="text-xl font-bold text-gray-900">Video Detector</span>
+<nav class="navbar">
+    <div class="navbar-container">
+        <div class="navbar-flex">
+            <div class="navbar-brand">
+                <span class="navbar-title">Video Detector</span>
             </div>
-            <div class="flex items-center">
-                {{-- You can add links here using Laravel's route helper --}}
-                <a class="text-gray-900 hover:text-gray-700">Home</a>
-                <a class="ml-4 text-gray-900 hover:text-gray-700">About</a>
-                <a  class="ml-4 text-gray-900 hover:text-gray-700">Contact</a>
+            <div class="navbar-links">
+                <a href="#" class="navbar-link">Home</a>
+                <a href="#" class="navbar-link">About</a>
+                <a href="#" class="navbar-link">Contact</a>
             </div>
         </div>
     </div>
 </nav>
+
+<style>
+    .navbar {
+        background-color: #ffffff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+
+    .navbar-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+    }
+
+    .navbar-brand {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #1a202c;
+    }
+
+    .navbar-links {
+        display: flex;
+        align-items: center;
+    }
+
+    .navbar-link {
+        color: #1a202c;
+        margin-left: 16px;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .navbar-link:hover {
+        color: #4a5568;
+    }
+</style>
