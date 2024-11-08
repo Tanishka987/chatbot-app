@@ -15,8 +15,10 @@ use App\Http\Controllers\VideoController;
 |
 */
 
-Route::get('/', function () {
+Route::get('/', [VideoController::class, 'index']);
+Route::get('/app', function () {
     return view('app'); 
 });
-Route::get('/index', [VideoController::class, 'index']);
 Route::post('/upload', [VideoController::class, 'upload'])->name('video.upload');
+Route::post('/api/chat', [ChatbotController::class, 'handleChat']);
+Route::post('/api/chat/delete', [ChatbotController::class, 'deleteChatHistory']);

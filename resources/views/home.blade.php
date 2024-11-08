@@ -17,13 +17,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            
+            margin-top:100px
         }
         .container {
             width: 100%;
             max-width: 640px;
             padding: 2rem;
             box-sizing: border-box;
+            
         }
 
         .title {
@@ -189,8 +190,8 @@
                     : '<span style="color: #38a169;">&#10004;</span>';
                 resultText.textContent = data.output;
                 confidenceFill.style.backgroundColor = isFake ? '#e53e3e' : '#38a169';
-                confidenceFill.style.width = ${data.confidence}%;
-                confidenceText.textContent = Confidence: ${data.confidence.toFixed(2)}%;
+                confidenceFill.style.width = `${data.confidence}%`;
+                confidenceText.textContent = `Confidence: ${data.confidence.toFixed(2)}%`;
 
                 resultDisplay.style.display = 'block';
             } catch (error) {

@@ -17,35 +17,58 @@ class ChatbotController extends Controller
         $this->vultrApiUrl = 'https://api.vultrinference.com/v1/'; 
     }
 
-    public function handleChat(Request $request)
+    public function deleteChatHistory(Request $request)
     {
-        $userMessage = $request->input('message');
+    // Clear the chat history from the session
+    session()->forget('chat_history');
 
-        // Call the Vultr API to get a response
-        $botResponse = $this->getBotResponse($userMessage);
-
-        return response()->json(['response' => $botResponse]);
+    // Return a response indicating success
+    return response()->json(['message' => 'Chat history deleted successfully.']);
     }
 
-    protected function getBotResponse($message)
+    public function handleChat(Request $request)
+    {
+        $request->validate([
+            'message' => 'required|string',
+        ]);
+    
+        // Retrieve the user's message
+        $userMessage = $request->input('message');
+    
+        // Retrieve conversation history from the session
+        $history = session()->get('chat_history', []);
+    
+        // Add the user's message to the history (latest question first)
+        array_unshift($history, ['role' => 'user', 'content' => $userMessage]);
+    
+        // Call the function to get a response from the AI
+        $botResponse = $this->getBotResponse($history);
+    
+        // Add the bot's response to the history
+        array_unshift($history, ['role' => 'assistant', 'content' => $botResponse]);
+    
+        // Save the updated history back to the session
+        session()->put('chat_history', $history);
+    
+        // Return both the response and the history
+        return response()->json(['response' => $botResponse, 'history' => $history]);
+    }
+    
+    
+    protected function getBotResponse($history)
     {
         $client = new Client();
 
         try {
             $requestData = [
-                'model' => 'zephyr-7b-beta-Q5_K_M', // Model name as a string
-                'messages' => [
-                    [
-                        'role' => 'user', // Role as a string
-                        'content' => $message, // User's message as a string
-                    ],
-                ],
+                'model' => 'zephyr-7b-beta-Q5_K_M',
+                'messages' => $history, // Use the entire conversation history
                 'max_tokens' => 512,
                 'seed' => -1,
                 'temperature' => 0.8,
                 'top_k' => 40,
                 'top_p' => 0.9,
-                'stream' => false, // Set to true if you want streaming responses
+                'stream' => false,
             ];
             $response = $client->post($this->vultrApiUrl . 'chat/completions', [
                 'headers' => [
@@ -57,10 +80,8 @@ class ChatbotController extends Controller
 
             $data = json_decode($response->getBody(), true);
 
-            // Adjust this based on the actual response structure
             return $data['choices'][0]['message']['content'] ?? 'Sorry, I did not understand that.';
         } catch (RequestException $e) {
-            // Log the error or handle it as needed
             return 'Error: ' . $e->getMessage();
         }
     }

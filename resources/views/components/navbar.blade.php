@@ -1,4 +1,10 @@
 {{-- resources/views/components/navbar.blade.php --}}
+<head>
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    
+</head>
 <nav class="navbar">
     <div class="navbar-container">
         <div class="navbar-flex">
@@ -9,6 +15,7 @@
                 <a href="#" class="navbar-link">Home</a>
                 <a href="#" class="navbar-link">About</a>
                 <a href="#" class="navbar-link">Contact</a>
+                <a href="{{ url('/app') }}" class="submit-button"><i class="fas fa-comments"></i></a>
             </div>
         </div>
     </div>
@@ -54,5 +61,8 @@
 
     .navbar-link:hover {
         color: #4a5568;
+    }
+    .submit-button{
+        margin-left: 10px;
     }
 </style>
