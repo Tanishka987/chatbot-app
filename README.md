@@ -34,8 +34,8 @@ The system architecture consists of:
 2. **Frontend (Laravel) Setup:**
     Navigate to the frontend directory and install dependencies.
     ```bash
-        composer install
-        php artisan serve
+    composer install
+    php artisan serve
 3. **Backend (Flask) Setup:**
     Create and activate a virtual environment, then install requirements.
     ```bash
