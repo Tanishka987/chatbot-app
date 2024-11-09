@@ -31,12 +31,13 @@ The system architecture consists of:
    git clone https://github.com/yourusername/ASLI-DeepFake-Detection.git
    cd ASLI-DeepFake-Detection
 
-2. **Frontend (Laravel) Setup:**
+2. **Create a folder named model**
+3. **Frontend (Laravel) Setup:**
     Navigate to the frontend directory and install dependencies.
     ```bash
     composer install
     php artisan serve
-3. **Backend (Flask) Setup:**
+4. **Backend (Flask) Setup:**
     Create and activate a virtual environment, then install requirements.
     ```bash
     python3 -m venv env
