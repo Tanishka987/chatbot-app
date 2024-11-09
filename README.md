@@ -5,7 +5,6 @@ A.S.L.I is a real-time deep fake detection system that combines AI and blockchai
 
 ## Features 🌟
 - **Real-Time Deep Fake Detection:** Accurate and efficient identification of manipulated media.
-- **Blockchain Verification:** Provides secure and verifiable results.
 - **Scalable Infrastructure:** Utilizes Vultr's cloud services for compute, storage, and serverless inference.
 - **Conversational Chatbot UI:** Interactive, history-based chatbot interface for ongoing user engagement.
 
@@ -14,12 +13,9 @@ The system architecture consists of:
 - **Frontend:** Laravel-based chatbot UI
 - **Backend:** Flask server processing requests and connecting with Vultr’s serverless inference
 - **AI Models:** LSTM & ResNeXt-50 for sequence and spatial analysis
-- **Blockchain:** Ensures verification and security of detection results
 
 ## API Endpoints 🗂️
 - **/detect** (POST): Submit video for deep fake detection
-- **/verify** (GET): Retrieve blockchain verification status for results
-- **/status** (GET): Check system status and detection progress
 
 ## Installation 🛠️
 
@@ -34,34 +30,32 @@ The system architecture consists of:
    ```bash
    git clone https://github.com/yourusername/ASLI-DeepFake-Detection.git
    cd ASLI-DeepFake-Detection
-   Frontend (Laravel) Setup:
 
-Navigate to the frontend directory and install dependencies.
-bash
-Copy code
-cd frontend
-npm install
-npm run dev
-Backend (Flask) Setup:
+2. **Frontend (Laravel) Setup:**
+    Navigate to the frontend directory and install dependencies.
+    ```bash
+        cd frontend
+        npm install
+        npm run dev
+3. **Backend (Flask) Setup:**
+    Create and activate a virtual environment, then install requirements.
+    ```bash
+    cd backend
+    python3 -m venv env
+    source env/bin/activate
+    pip install -r requirements.txt
+    Serverless Inference Setup (Vultr):
 
-Create and activate a virtual environment, then install requirements.
-bash
-Copy code
-cd backend
-python3 -m venv env
-source env/bin/activate
-pip install -r requirements.txt
-Serverless Inference Setup (Vultr):
-
-Follow Vultr's serverless documentation for deployment and integration with Flask.
+**Follow Vultr's serverless documentation for deployment and integration with Flask.**
 Run the Project:
-
-Start both the frontend and backend services, ensuring Vultr inference is active.
-Usage 💬
+    Start both the frontend and backend services, ensuring Vultr inference is active.
+    
+**Usage 💬**
 Access the chatbot UI to interact with the system.
 Submit videos for detection using the /detect endpoint.
 Use /verify for blockchain verification and /status to monitor progress.
-Technologies Used 🧩
+
+**Technologies Used 🧩**
 Frontend: Laravel, JavaScript
 Backend: Flask, OpenCV, TensorFlow, LSTM & ResNeXt-50 models
 Cloud Services: Vultr (Compute Instances, Block Storage, Serverless Inference)
