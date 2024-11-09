@@ -34,17 +34,15 @@ The system architecture consists of:
 2. **Frontend (Laravel) Setup:**
     Navigate to the frontend directory and install dependencies.
     ```bash
-        cd frontend
-        npm install
-        npm run dev
+        composer install
+        php artisan serve
 3. **Backend (Flask) Setup:**
     Create and activate a virtual environment, then install requirements.
     ```bash
-    cd backend
     python3 -m venv env
     source env/bin/activate
     pip install -r requirements.txt
-    Serverless Inference Setup (Vultr):
+    Setup Vultr Serverless Inference and enter VULR_API_KEY in .env
 
 **Follow Vultr's serverless documentation for deployment and integration with Flask.**
 Run the Project:
