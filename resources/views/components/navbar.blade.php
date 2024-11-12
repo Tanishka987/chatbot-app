@@ -12,7 +12,7 @@
                 <span class="navbar-title">Video Detector</span>
             </div>
             <div class="navbar-links">
-                <a href="#" class="navbar-link">Home</a>
+                <a href="{{ url('/') }} "class="navbar-link">Home</a>
                 <a href="#" class="navbar-link">About</a>
                 <a href="#" class="navbar-link">Contact</a>
                 <a href="{{ url('/app') }}" class="submitbutton"><i class="fas fa-comments"></i></a>
