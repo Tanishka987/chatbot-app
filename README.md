@@ -31,7 +31,7 @@ The system architecture consists of:
    git clone https://github.com/yourusername/ASLI-DeepFake-Detection.git
    cd ASLI-DeepFake-Detection
 
-2. **Create a folder named model**
+2. **Create a folder named model and download model from https://drive.google.com/file/d/1CCKCrG2o9HtA0deLD2eGyRb0bOk4W24t/view?usp=drive_link**
 3. **Frontend (Laravel) Setup:**
     Navigate to the frontend directory and install dependencies.
     ```bash
