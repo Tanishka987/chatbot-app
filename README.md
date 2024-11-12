@@ -52,10 +52,8 @@ Run the Project:
 **Usage 💬**
 Access the chatbot UI to interact with the system.
 Submit videos for detection using the /detect endpoint.
-Use /verify for blockchain verification and /status to monitor progress.
 
 **Technologies Used 🧩**
 Frontend: Laravel, JavaScript
 Backend: Flask, OpenCV, TensorFlow, LSTM & ResNeXt-50 models
 Cloud Services: Vultr (Compute Instances, Block Storage, Serverless Inference)
-Blockchain: Verification layer for secure result validation
