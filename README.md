@@ -1,7 +1,7 @@
 # A.S.L.I (Advanced Surveillance Logic-Based Identification of Deep Fakes) 📹🔍
 
 ## Overview
-A.S.L.I is a real-time deep fake detection system that combines AI and blockchain technology to ensure media authenticity. The system utilizes **LSTM** and **ResNeXt-50** deep learning models for detection, processes frames with **OpenCV**, and leverages **blockchain** for result verification. The frontend is built with **Laravel** for a chatbot UI, and the backend runs on **Flask**, integrated with **Vultr's serverless inference** for scalable, reliable processing.
+A.S.L.I is a real-time deep fake detection system that combines AI and blockchain technology to ensure media authenticity. The system utilizes **LSTM** and **ResNeXt-50** deep learning models for detection, processes frames with **OpenCV**. The frontend is built with **Laravel** for a chatbot UI, and the backend runs on **Flask**, integrated with **Vultr's serverless inference** for scalable, reliable processing.
 
 ## Features 🌟
 - **Real-Time Deep Fake Detection:** Accurate and efficient identification of manipulated media.
@@ -21,7 +21,7 @@ The system architecture consists of:
 
 ### Prerequisites
 - **Python** (v3.8 or later)
-- **Node.js** and **npm** (for frontend setup)
+- **Node.js**, **npm**, **php**  (for frontend setup)
 - **Flask** and **OpenCV** (for backend processing)
 - **Vultr** account (for serverless inference setup)
 
