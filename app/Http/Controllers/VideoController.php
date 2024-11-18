@@ -23,7 +23,7 @@ class VideoController extends Controller
         // Send the video file to the external API
         $response = Http::attach(
             'video', file_get_contents($videoFile->getPathname()), $videoFile->getClientOriginalName()
-        )->post('http://139.84.173.30:5000/Detect');
+        )->post('http://139.84.172.91:5000/Detect');
 
         if ($response->failed()) {
             throw new \Exception('Failed to process video');
